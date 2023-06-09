@@ -18,8 +18,8 @@ jobs:
     - name: Raise PR
       uses: peter-evans/create-pull-request@v3
       with:
-        branch: "auto-pr-branch"
-        base: production
+        branch: production
+        base: staging
         title: "demo for auto pr"
         commtter: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}">
         author: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }} ">
