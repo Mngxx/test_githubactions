@@ -20,4 +20,16 @@ jobs:
           git checkout devel
           git pull
           git merge --no-ff production -m "Auto-merge master back to dev"
-          git push
+    - name: Raise PR
+      id: cpr
+      uses: peter-evans/create-pull-request@v5
+      with:
+        branch: "auto-merge"
+        base: staging
+        title: "demo for auto pr"
+        committer: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}">
+        author: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }} ">
+        body:
+          This is to show automatic PR creation
+        token: ${{ secrets.GITHUB_TOKEN }}
+        delete-branch: false
