@@ -1,0 +1,35 @@
+name: Merge to devel and staging on production
+
+on:
+  push:
+    branches:
+      - production
+jobs:
+  updateAuthor:
+    name: Update Author
+    runs-on: ubuntu-latest
+    steps:
+    - name: checking out code
+      uses: actions/checkout@v2
+    - name: extract git commit data
+      uses: rlespinasse/git-commit-data-action@v1.x
+    - name: Raise PR
+      id: cpr
+      uses: peter-evans/create-pull-request@v5
+      with:
+        branch: "auto-merge"
+        base: staging
+        title: "demo for auto pr"
+        committer: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}">
+        author: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }} ">
+        body:
+          This is to show automatic PR creation
+        token: ${{ secrets.GITHUB_TOKEN }}
+        delete-branch: false
+    - name: Enable Pull Request Automerge
+      if: steps.cpr.outputs.pull-request-operation == 'created'
+      uses: peter-evans/enable-pull-request-automerge@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+        merge-method: squash
