@@ -10,11 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checking out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@production
+    - name: Merge by labeled
+      uses: devmasx/merge-branch@production
       with:
-        ref: staging
-    - name: Update author information
-      run: git merge production
+        target_branch: staging
+        github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Raise PR
       id: cpr
       uses: peter-evans/create-pull-request@v5
