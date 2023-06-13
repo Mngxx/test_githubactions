@@ -11,12 +11,10 @@ jobs:
     steps:
     - name: checking out code
       uses: actions/checkout@v3
-    - name: extract git commit data
-      uses: rlespinasse/git-commit-data-action@v1.x
+      with:
+        ref: staging
     - name: Update author information
-      run: |
-            git checkout staging
-            git merge origin/production
+      run: git merge origin/production
     - name: Raise PR
       id: cpr
       uses: peter-evans/create-pull-request@v5
