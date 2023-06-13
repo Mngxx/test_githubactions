@@ -1,40 +1,23 @@
-name: Merge to devel and staging on production
-
-on:
-  push:
-    branches:
-      - production
+name: PRs to master
+on: 
+  pull_request:
+    branches: production
+    types: closed
 jobs:
-  updateAuthor:
-    name: Update Author
+  merge-master-back-to-dev:
+    if: github.event.pull_request.merged == true
+    timeout-minutes: 2
     runs-on: ubuntu-latest
     steps:
-    - name: checking out code
-      uses: actions/checkout@v3
-    - name: Merge by labeled
-      uses: devmasx/merge-branch@v1.3.1
-      with:
-        type: now
-        from_branch: production
-        target_branch: staging
-        token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Raise PR
-      id: cpr
-      uses: peter-evans/create-pull-request@v5
-      with:
-        branch: "auto-merge"
-        base: staging
-        title: "demo for auto pr"
-        committer: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}">
-        author: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }} ">
-        body:
-          This is to show automatic PR creation
-        token: ${{ secrets.GITHUB_TOKEN }}
-        delete-branch: false
-    - name: Enable Pull Request Automerge
-      if: steps.cpr.outputs.pull-request-operation == 'created'
-      uses: peter-evans/enable-pull-request-automerge@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
-        merge-method: squash
+    - uses: actions/checkout@v3
+    - name: Set Git config
+      run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Github Actions"
+    - name: Merge prod back to dev
+      run: |
+          git fetch --unshallow
+          git checkout devel
+          git pull
+          git merge --no-ff production -m "Auto-merge master back to dev"
+          git push
