@@ -14,10 +14,17 @@ jobs:
       run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "Github Actions"
-    - name: Merge prod back to dev
+    - name: Merge production back to staging
+      run: |
+          git fetch --unshallow
+          git checkout staging
+          git pull
+          git merge --no-ff production -m "Auto-merge production back to staging"
+          git push
+    - name: Merge staging back to devel
       run: |
           git fetch --unshallow
           git checkout devel
           git pull
-          git merge --no-ff production -m "Auto-merge master back to dev"
+          git merge --no-ff staging -m "Auto-merge staging back to devel"
           git push
