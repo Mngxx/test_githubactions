@@ -14,25 +14,17 @@ jobs:
       run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "Github Actions"
-    - name: Merge prod back to dev
+    - name: Merge production back to staging
+      run: |
+          git fetch --unshallow
+          git checkout staging
+          git pull
+          git merge --no-ff production -m "Auto-merge production back to staging"
+          git push
+    - name: Merge staging back to devel
       run: |
           git fetch --unshallow
           git checkout devel
           git pull
-          git merge --no-ff production -m "Auto-merge master back to dev"
-    - uses: actions/checkout@v3
-    - name: extract git commit data
-      uses: rlespinasse/git-commit-data-action@v1.x
-    - name: Raise PR
-      id: cpr
-      uses: peter-evans/create-pull-request@v5
-      with:
-        branch: "auto-merge"
-        base: staging
-        title: "demo for auto pr"
-        committer: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}">
-        author: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }} ">
-        body:
-          This is to show automatic PR creation
-        token: ${{ secrets.GITHUB_TOKEN }}
-        delete-branch: false
+          git merge --no-ff staging -m "Auto-merge staging back to devel"
+          git push
